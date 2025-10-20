@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台测试</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <h1 style="padding: 20px; color: white;">管理后台功能测试</h1>
+    
+    <div style="padding: 20px; color: white;">
+        <h2>测试1: 检查元素是否存在</h2>
+        <button onclick="testElements()">运行测试</button>
+        <pre id="testResult" style="background: rgba(0,0,0,0.3); padding: 10px; margin-top: 10px;"></pre>
+    </div>
+
+    <script>
+        function testElements() {
+            const result = [];
+            
+            // 测试菜单项
+            const menuItems = document.querySelectorAll('.menu-item');
+            result.push(`菜单项数量: ${menuItems.length}`);
+            menuItems.forEach((item, i) => {
+                result.push(`  菜单${i+1}: data-section="${item.dataset.section}"`);
+            });
+            
+            // 测试内容区域
+            const sections = document.querySelectorAll('.content-section');
+            result.push(`\n内容区域数量: ${sections.length}`);
+            sections.forEach((section, i) => {
+                result.push(`  区域${i+1}: id="${section.id}", active=${section.classList.contains('active')}`);
+            });
+            
+            // 测试按钮
+            const saveBtn = document.getElementById('saveAllBtn');
+            result.push(`\n保存按钮: ${saveBtn ? '找到' : '未找到'}`);
+            
+            document.getElementById('testResult').textContent = result.join('\n');
+        }
+        
+        // 自动运行测试
+        window.addEventListener('load', () => {
+            setTimeout(testElements, 500);
+        });
+    </script>
+    
+    <!-- 引入实际的HTML内容 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">测试</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-save-all" id="saveAllBtn">保存所有更改</button>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="admin-sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item active" data-section="site-info">
+                <span>网站信息</span>
+            </li>
+            <li class="menu-item" data-section="works">
+                <span>作品管理</span>
+            </li>
+            <li class="menu-item" data-section="personal-info">
+                <span>个人信息</span>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="admin-content">
+        <section id="site-info-section" class="content-section active">
+            <h2>网站信息区域</h2>
+        </section>
+        
+        <section id="works-section" class="content-section">
+            <h2>作品管理区域</h2>
+        </section>
+        
+        <section id="personal-info-section" class="content-section">
+            <h2>个人信息区域</h2>
+        </section>
+    </main>
+</body>
+</html>
+

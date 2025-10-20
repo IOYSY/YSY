@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>液体玻璃效果 - 调试工具</title>
+    <link rel="stylesheet" href="liquid-glass.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 48px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .debug-navbar {
+            width: 100%;
+            padding: 20px 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .info-panel h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .info-panel pre {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .status.warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .test-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .test-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+        
+        .test-card h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .test-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            margin: 10px 5px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 液体玻璃效果调试工具</h1>
+        
+        <!-- 测试导航栏 -->
+        <div class="debug-navbar" id="testNavbar">
+            <div class="nav-content">
+                <div class="nav-logo">YSY Portfolio</div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link">首页</a>
+                    <a href="#" class="nav-link">作品</a>
+                    <a href="#" class="nav-link">关于</a>
+                    <a href="#" class="nav-link">联系</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 诊断信息 -->
+        <div class="info-panel">
+            <h2>🔍 诊断信息</h2>
+            <div id="diagnostics">
+                <p>正在检测...</p>
+            </div>
+        </div>
+        
+        <!-- SVG滤镜信息 -->
+        <div class="info-panel">
+            <h2>📐 SVG滤镜状态</h2>
+            <div id="svgInfo">
+                <p>等待初始化...</p>
+            </div>
+        </div>
+        
+        <!-- 控制按钮 -->
+        <div class="info-panel" style="text-align: center;">
+            <h2>🎮 测试控制</h2>
+            <button class="button" onclick="reinitEffect()">🔄 重新初始化效果</button>
+            <button class="button" onclick="toggleDebug()">🐛 切换调试模式</button>
+            <button class="button" onclick="checkSVGFilter()">🔎 检查SVG滤镜</button>
+            <button class="button" onclick="window.location.href='index.html'">🏠 返回主页</button>
+        </div>
+        
+        <!-- 测试卡片 -->
+        <div class="test-cards">
+            <div class="test-card">
+                <h3>✅ 预期效果</h3>
+                <p>边缘应该有轻微的彩虹色扭曲效果（RGB色彩分离）</p>
+            </div>
+            <div class="test-card">
+                <h3>🌫️ 背景模糊</h3>
+                <p>背景应该模糊且颜色饱和度增强</p>
+            </div>
+            <div class="test-card">
+                <h3>✨ 边框高光</h3>
+                <p>移动鼠标到导航栏，边框应该有跟随的高光效果</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="liquid-glass.js"></script>
+    <script src="liquid-glass-panel.js"></script>
+    <script>
+        let glassEffect = null;
+        let controlPanel = null;
+        
+        function updateDiagnostics() {
+            const diagnostics = document.getElementById('diagnostics');
+            const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            const isFirefox = /Firefox/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            
+            let browserSupport = '';
+            let supportClass = '';
+            
+            if (isChrome) {
+                browserSupport = 'Chrome - 完全支持';
+                supportClass = 'success';
+            } else if (isFirefox) {
+                browserSupport = 'Firefox - 部分支持（无位移映射）';
+                supportClass = 'warning';
+            } else if (isSafari) {
+                browserSupport = 'Safari - 部分支持（无位移映射）';
+                supportClass = 'warning';
+            } else {
+                browserSupport = '未知浏览器';
+                supportClass = 'error';
+            }
+            
+            const hasBackdropFilter = CSS.supports('backdrop-filter', 'blur(1px)') || 
+                                      CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
+            
+            diagnostics.innerHTML = `
+                <p><strong>浏览器：</strong> <span class="status ${supportClass}">${browserSupport}</span></p>
+                <p><strong>backdrop-filter支持：</strong> <span class="status ${hasBackdropFilter ? 'success' : 'error'}">${hasBackdropFilter ? '支持' : '不支持'}</span></p>
+                <p><strong>用户代理：</strong> ${navigator.userAgent}</p>
+            `;
+        }
+        
+        function initEffect() {
+            console.log('[Debug] Initializing liquid glass effect...');
+            
+            const navbar = document.getElementById('testNavbar');
+            
+            if (!navbar) {
+                alert('找不到测试导航栏！');
+                return;
+            }
+            
+            // 创建液体玻璃效果
+            glassEffect = new LiquidGlassEffect(navbar, {
+                displacementScale: 100,
+                blurAmount: 40,
+                saturation: 200,
+                aberrationIntensity: 5,
+                elasticity: 0.3
+            });
+            
+            // 创建控制面板
+            controlPanel = new LiquidGlassControlPanel(navbar, glassEffect);
+            
+            window.liquidGlass = {
+                effect: glassEffect,
+                panel: controlPanel
+            };
+            
+            // 更新SVG信息
+            setTimeout(() => {
+                updateSVGInfo();
+            }, 500);
+            
+            console.log('[Debug] Effect initialized:', glassEffect);
+        }
+        
+        function updateSVGInfo() {
+            const svgInfo = document.getElementById('svgInfo');
+            
+            if (!glassEffect) {
+                svgInfo.innerHTML = '<p>效果未初始化</p>';
+                return;
+            }
+            
+            const svgElement = glassEffect.svgElement;
+            const filterId = glassEffect.filterId;
+            const glassWarp = glassEffect.glassWarp;
+            
+            const svgExists = document.body.contains(svgElement);
+            const filterApplied = glassWarp && glassWarp.style.filter;
+            const filterValue = filterApplied || 'none';
+            
+            svgInfo.innerHTML = `
+                <p><strong>滤镜ID：</strong> ${filterId}</p>
+                <p><strong>SVG元素存在：</strong> <span class="status ${svgExists ? 'success' : 'error'}">${svgExists ? '是' : '否'}</span></p>
+                <p><strong>滤镜已应用：</strong> <span class="status ${filterApplied && filterValue !== 'none' ? 'success' : 'error'}">${filterApplied ? '是' : '否'}</span></p>
+                <p><strong>滤镜值：</strong> <code>${filterValue}</code></p>
+                <p><strong>backdrop-filter：</strong> ${glassWarp ? glassWarp.style.backdropFilter : 'N/A'}</p>
+            `;
+        }
+        
+        function reinitEffect() {
+            if (glassEffect) {
+                glassEffect.destroy();
+            }
+            if (controlPanel) {
+                controlPanel.hide();
+            }
+            
+            setTimeout(() => {
+                initEffect();
+            }, 200);
+        }
+        
+        function toggleDebug() {
+            if (glassEffect && glassEffect.glassWarp) {
+                const current = glassEffect.glassWarp.style.outline;
+                glassEffect.glassWarp.style.outline = current ? '' : '2px solid red';
+                
+                if (glassEffect.border1) {
+                    glassEffect.border1.style.outline = current ? '' : '2px solid blue';
+                }
+                if (glassEffect.border2) {
+                    glassEffect.border2.style.outline = current ? '' : '2px solid green';
+                }
+            }
+        }
+        
+        function checkSVGFilter() {
+            if (!glassEffect) {
+                alert('效果未初始化！');
+                return;
+            }
+            
+            updateSVGInfo();
+            
+            const svgElement = glassEffect.svgElement;
+            const filterId = glassEffect.filterId;
+            
+            console.group('SVG滤镜检查');
+            console.log('SVG元素:', svgElement);
+            console.log('滤镜ID:', filterId);
+            console.log('SVG在DOM中:', document.body.contains(svgElement));
+            console.log('滤镜元素:', document.getElementById(filterId));
+            console.log('玻璃层filter样式:', glassEffect.glassWarp.style.filter);
+            console.groupEnd();
+            
+            alert('检查信息已输出到控制台，请按F12查看');
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            updateDiagnostics();
+            setTimeout(() => {
+                initEffect();
+            }, 300);
+        });
+    </script>
+</body>
+</html>
+

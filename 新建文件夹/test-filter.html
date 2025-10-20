@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG滤镜测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: sans-serif;
+        }
+        
+        .test-box {
+            width: 600px;
+            height: 200px;
+            margin: 20px auto;
+            padding: 30px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: visible;
+        }
+        
+        .test-1 {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+        }
+        
+        .test-2 {
+            background: transparent;
+        }
+        
+        .test-2-bg {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            filter: url(#liquidGlassFilter);
+            border-radius: inherit;
+            z-index: 0;
+        }
+        
+        .test-2 > span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .info {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            color: white;
+        }
+        
+        .info h2 {
+            margin-top: 0;
+        }
+        
+        .info code {
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .success {
+            background: #10b981;
+        }
+        
+        .error {
+            background: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h2>🧪 SVG滤镜效果测试</h2>
+        <p><strong>浏览器：</strong><span id="browser"></span></p>
+        <p><strong>SVG滤镜支持：</strong><span id="svgSupport"></span></p>
+        <p><strong>feDisplacementMap：</strong><span id="displacementSupport"></span></p>
+    </div>
+    
+    <div class="test-box test-1">
+        测试 1: 普通毛玻璃效果<br>
+        (backdrop-filter)
+    </div>
+    
+    <div class="test-box test-2">
+        <div class="test-2-bg" id="testBg"></div>
+        <span>测试 2: 液体玻璃效果<br>(backdrop-filter + SVG滤镜)</span>
+    </div>
+    
+    <div class="info">
+        <h3>📊 测试结果</h3>
+        <p id="result">检测中...</p>
+        <button onclick="checkFilter()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">🔍 重新检查滤镜</button>
+    </div>
+    
+    <!-- SVG滤镜定义 -->
+    <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+        <defs>
+            <filter id="liquidGlassFilter" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+                <!-- 位移贴图 -->
+                <feImage x="0" y="0" width="100%" height="100%" result="DISPLACEMENT_MAP" 
+                         href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2Ij48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImdyYWQiIGN4PSI1MCUiIGN5PSI1MCUiIHI9IjUwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6cmdiKDEyOCwxMjgsMTI4KTtzdG9wLW9wYWNpdHk6MSIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOnJnYigyNTUsMTI4LDEyOCk7c3RvcC1vcGFjaXR5OjEiIC8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+"
+                         preserveAspectRatio="xMidYMid slice"/>
+                
+                <!-- 边缘遮罩 -->
+                <feColorMatrix in="DISPLACEMENT_MAP" type="matrix"
+                              values="0.3 0.3 0.3 0 0
+                                     0.3 0.3 0.3 0 0
+                                     0.3 0.3 0.3 0 0
+                                     0 0 0 1 0"
+                              result="EDGE_INTENSITY"/>
+                
+                <feComponentTransfer in="EDGE_INTENSITY" result="EDGE_MASK">
+                    <feFuncA type="discrete" tableValues="0 0.1 1"/>
+                </feComponentTransfer>
+                
+                <!-- 原始图像 -->
+                <feOffset in="SourceGraphic" dx="0" dy="0" result="CENTER_ORIGINAL"/>
+                
+                <!-- 红色通道位移 -->
+                <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" 
+                                  scale="-70" xChannelSelector="R" yChannelSelector="B" 
+                                  result="RED_DISPLACED"/>
+                <feColorMatrix in="RED_DISPLACED" type="matrix"
+                              values="1 0 0 0 0
+                                     0 0 0 0 0
+                                     0 0 0 0 0
+                                     0 0 0 1 0"
+                              result="RED_CHANNEL"/>
+                
+                <!-- 绿色通道位移 -->
+                <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" 
+                                  scale="-73.5" xChannelSelector="R" yChannelSelector="B" 
+                                  result="GREEN_DISPLACED"/>
+                <feColorMatrix in="GREEN_DISPLACED" type="matrix"
+                              values="0 0 0 0 0
+                                     0 1 0 0 0
+                                     0 0 0 0 0
+                                     0 0 0 1 0"
+                              result="GREEN_CHANNEL"/>
+                
+                <!-- 蓝色通道位移 -->
+                <feDisplacementMap in="SourceGraphic" in2="DISPLACEMENT_MAP" 
+                                  scale="-77" xChannelSelector="R" yChannelSelector="B" 
+                                  result="BLUE_DISPLACED"/>
+                <feColorMatrix in="BLUE_DISPLACED" type="matrix"
+                              values="0 0 0 0 0
+                                     0 0 0 0 0
+                                     0 0 1 0 0
+                                     0 0 0 1 0"
+                              result="BLUE_CHANNEL"/>
+                
+                <!-- 合成通道 -->
+                <feBlend in="GREEN_CHANNEL" in2="BLUE_CHANNEL" mode="screen" result="GB_COMBINED"/>
+                <feBlend in="RED_CHANNEL" in2="GB_COMBINED" mode="screen" result="RGB_COMBINED"/>
+                
+                <!-- 模糊柔化 -->
+                <feGaussianBlur in="RGB_COMBINED" stdDeviation="0.5" result="ABERRATED_BLURRED"/>
+                
+                <!-- 应用边缘遮罩 -->
+                <feComposite in="ABERRATED_BLURRED" in2="EDGE_MASK" operator="in" result="EDGE_ABERRATION"/>
+                
+                <!-- 反转遮罩 -->
+                <feComponentTransfer in="EDGE_MASK" result="INVERTED_MASK">
+                    <feFuncA type="table" tableValues="1 0"/>
+                </feComponentTransfer>
+                <feComposite in="CENTER_ORIGINAL" in2="INVERTED_MASK" operator="in" result="CENTER_CLEAN"/>
+                
+                <!-- 最终合成 -->
+                <feComposite in="EDGE_ABERRATION" in2="CENTER_CLEAN" operator="over"/>
+            </filter>
+        </defs>
+    </svg>
+    
+    <script>
+        // 浏览器检测
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isFirefox = /Firefox/.test(navigator.userAgent);
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+        const isEdge = /Edg/.test(navigator.userAgent);
+        
+        let browserName = 'Unknown';
+        if (isChrome) browserName = 'Chrome';
+        if (isEdge) browserName = 'Edge';
+        if (isFirefox) browserName = 'Firefox';
+        if (isSafari) browserName = 'Safari';
+        
+        document.getElementById('browser').innerHTML = `<span class="status ${isChrome || isEdge ? 'success' : 'error'}">${browserName}</span>`;
+        
+        // SVG支持检测
+        const supportsSVG = document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicFilter", "1.1");
+        document.getElementById('svgSupport').innerHTML = `<span class="status ${supportsSVG ? 'success' : 'error'}">${supportsSVG ? '支持' : '不支持'}</span>`;
+        
+        // feDisplacementMap支持检测
+        const supportsDisplacement = (isChrome || isEdge);
+        document.getElementById('displacementSupport').innerHTML = `<span class="status ${supportsDisplacement ? 'success' : 'error'}">${supportsDisplacement ? '支持' : '不支持'}</span>`;
+        
+        // 检查滤镜
+        function checkFilter() {
+            const testBg = document.getElementById('testBg');
+            const filter = window.getComputedStyle(testBg).filter;
+            const filterProp = testBg.style.filter;
+            
+            const result = document.getElementById('result');
+            result.innerHTML = `
+                <p><strong>设置的filter值：</strong><br><code>${filterProp}</code></p>
+                <p><strong>实际应用的filter：</strong><br><code>${filter}</code></p>
+                <p><strong>滤镜元素：</strong> ${document.getElementById('liquidGlassFilter') ? '✅ 存在' : '❌ 不存在'}</p>
+                ${filter && filter !== 'none' && filter.includes('url') ? 
+                    '<p style="color: #10b981; font-weight: bold;">✅ SVG滤镜已正确应用！你应该能在"测试 2"看到边缘有轻微的彩虹色效果。</p>' : 
+                    '<p style="color: #ef4444; font-weight: bold;">❌ SVG滤镜未应用！可能是浏览器不支持或被禁用。</p>'}
+            `;
+            
+            console.log('Filter Property:', filterProp);
+            console.log('Computed Filter:', filter);
+            console.log('Filter Element:', document.getElementById('liquidGlassFilter'));
+        }
+        
+        // 页面加载后检查
+        window.addEventListener('load', () => {
+            setTimeout(checkFilter, 500);
+        });
+    </script>
+</body>
+</html>
+

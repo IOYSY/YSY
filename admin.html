@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - Portfolio Admin</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="admin-navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-text">YSY</span>
+                <span class="logo-subtitle">管理后台</span>
+            </div>
+            <div class="nav-actions">
+                <a href="index.html" class="btn-view-site" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="currentColor"/>
+                    </svg>
+                    查看网站
+                </a>
+                <button class="btn-save-all" id="saveAllBtn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M15 2H5C3.89543 2 3 2.89543 3 4V16C3 17.1046 3.89543 18 5 18H15C16.1046 18 17 17.1046 17 16V4C17 2.89543 16.1046 2 15 2Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M13 2V7H7V2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M7 12H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    保存所有更改
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 侧边栏 -->
+    <aside class="admin-sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item active" data-section="site-info">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <span>网站信息</span>
+            </li>
+            <li class="menu-item" data-section="works">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 16V8C20.9996 7.64927 20.9071 7.30481 20.7315 7.00116C20.556 6.69751 20.3037 6.44536 20 6.27L13 2.27C12.696 2.09446 12.3511 2.00205 12 2.00205C11.6489 2.00205 11.304 2.09446 11 2.27L4 6.27C3.69626 6.44536 3.44398 6.69751 3.26846 7.00116C3.09294 7.30481 3.00036 7.64927 3 8V16C3.00036 16.3507 3.09294 16.6952 3.26846 16.9988C3.44398 17.3025 3.69626 17.5546 4 17.73L11 21.73C11.304 21.9055 11.6489 21.9979 12 21.9979C12.3511 21.9979 12.696 21.9055 13 21.73L20 17.73C20.3037 17.5546 20.556 17.3025 20.7315 16.9988C20.9071 16.6952 20.9996 16.3507 21 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>作品管理</span>
+            </li>
+            <li class="menu-item" data-section="personal-info">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>个人信息</span>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="admin-content">
+        <!-- 网站信息区域 -->
+        <section id="site-info-section" class="content-section active">
+            <div class="section-header">
+                <h2>网站基本信息</h2>
+                <p>修改网站标题、导航栏、首页等基本信息</p>
+            </div>
+
+            <div class="form-group">
+                <label for="siteTitle">网站标题</label>
+                <input type="text" id="siteTitle" placeholder="个人作品集 - Portfolio">
+            </div>
+
+            <div class="form-group">
+                <label for="logoText">Logo文字</label>
+                <input type="text" id="logoText" placeholder="YSY">
+            </div>
+
+            <div class="form-group">
+                <label for="logoSubtitle">Logo副标题</label>
+                <input type="text" id="logoSubtitle" placeholder="Portfolio">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="heroTitle1">首页标题(第一行)</label>
+                    <input type="text" id="heroTitle1" placeholder="创造">
+                </div>
+                <div class="form-group">
+                    <label for="heroTitle2">首页标题(第二行)</label>
+                    <input type="text" id="heroTitle2" placeholder="科技未来">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="heroSubtitle">首页副标题</label>
+                <input type="text" id="heroSubtitle" placeholder="探索创新 · 设计极致 · 代码艺术">
+            </div>
+
+            <div class="form-group">
+                <label for="aboutText">关于我 - 简介</label>
+                <textarea id="aboutText" rows="4" placeholder="我是一名充满热情的创作者..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="aboutSkills">关于我 - 擅长领域</label>
+                <input type="text" id="aboutSkills" placeholder="全栈开发 · UI/UX设计 · 数据可视化 · 3D动画">
+            </div>
+        </section>
+
+        <!-- 作品管理区域 -->
+        <section id="works-section" class="content-section">
+            <div class="section-header">
+                <h2>作品管理</h2>
+                <p>添加、编辑、删除作品</p>
+                <button class="btn-add" id="addWorkBtn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    添加新作品
+                </button>
+            </div>
+
+            <div class="works-list" id="worksList">
+                <!-- 作品卡片将动态生成 -->
+            </div>
+        </section>
+
+        <!-- 个人信息区域 -->
+        <section id="personal-info-section" class="content-section">
+            <div class="section-header">
+                <h2>个人信息卡片</h2>
+                <p>修改个人信息卡片的内容</p>
+            </div>
+
+            <div class="form-group">
+                <label for="personName">姓名</label>
+                <input type="text" id="personName" placeholder="YSY">
+            </div>
+
+            <div class="form-group">
+                <label for="personTitle">职位/身份</label>
+                <input type="text" id="personTitle" placeholder="全栈开发 · UI设计师">
+            </div>
+
+            <div class="form-group">
+                <label for="personEmail">邮箱</label>
+                <input type="email" id="personEmail" placeholder="your.email@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="personLocation">位置</label>
+                <input type="text" id="personLocation" placeholder="中国">
+            </div>
+
+            <div class="form-group">
+                <label for="personExperience">工作经验</label>
+                <input type="text" id="personExperience" placeholder="5+ 年">
+            </div>
+
+            <div class="form-group">
+                <label for="personSpecialty">专长</label>
+                <input type="text" id="personSpecialty" placeholder="React · Vue · UI/UX">
+            </div>
+
+            <div class="form-group">
+                <label>联系方式</label>
+                <div class="contact-links-editor">
+                    <div class="contact-link-item">
+                        <input type="text" id="contactEmail" placeholder="邮箱地址">
+                    </div>
+                    <div class="contact-link-item">
+                        <input type="text" id="contactGithub" placeholder="GitHub链接">
+                    </div>
+                    <div class="contact-link-item">
+                        <input type="text" id="contactTwitter" placeholder="Twitter链接">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 添加/编辑作品模态框 -->
+    <div class="modal" id="workModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加新作品</h3>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="workType">作品类型</label>
+                    <select id="workType" class="form-select">
+                        <option value="video">视频项目</option>
+                        <option value="image">图片/设计</option>
+                        <option value="document">文档</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="workSize">卡片大小</label>
+                    <select id="workSize" class="form-select">
+                        <option value="medium">中等</option>
+                        <option value="large">大</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="mediaUploadGroup">
+                    <label for="workMedia">上传文件（可选）</label>
+                    <div class="file-upload-area">
+                        <input type="file" id="workMedia" accept="image/*,video/*,.pdf,.doc,.docx">
+                        <div class="upload-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15M17 8L12 3M12 3L7 8M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>点击或拖拽文件到此处上传</p>
+                            <span>支持最大 50MB，使用IndexedDB大容量存储 🚀</span>
+                        </div>
+                        <div class="file-preview" id="filePreview"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="workMediaUrl">或使用外部链接（推荐）</label>
+                    <input type="url" id="workMediaUrl" placeholder="https://example.com/image.jpg 或视频链接">
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">
+                        💡 使用外部图片/视频链接可以避免存储空间限制
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="workTag">作品标签</label>
+                    <input type="text" id="workTag" placeholder="例如：视频项目">
+                </div>
+
+                <div class="form-group">
+                    <label for="workTitle">作品标题</label>
+                    <input type="text" id="workTitle" placeholder="输入作品标题">
+                </div>
+
+                <div class="form-group">
+                    <label for="workDescription">作品描述</label>
+                    <textarea id="workDescription" rows="4" placeholder="详细描述您的作品..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="workYear">年份</label>
+                    <input type="text" id="workYear" placeholder="2024">
+                </div>
+
+                <div class="form-group">
+                    <label for="workTech">技术栈/标签</label>
+                    <input type="text" id="workTech" placeholder="用 · 分隔，例如：React · Python">
+                </div>
+
+                <div class="form-group">
+                    <label for="workLink">作品链接 (可选)</label>
+                    <input type="url" id="workLink" placeholder="https://...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelBtn">取消</button>
+                <button class="btn-save" id="saveWorkBtn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="data-manager.js"></script>
+    <script src="indexeddb-manager.js"></script>
+    <script src="admin.js"></script>
+    <script src="fix-admin.js"></script>
+</body>
+</html>
+

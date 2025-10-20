@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航栏测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 300vh;
+            padding-top: 100px;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, 
+                        rgba(255, 255, 255, 0.1) 0%, 
+                        rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border-bottom: 1.5px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            color: white;
+        }
+        
+        .status-panel {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .status-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .good {
+            border-left: 4px solid #10b981;
+        }
+        
+        .bad {
+            border-left: 4px solid #ef4444;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            margin: 20px 0;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar" id="navbar">
+        <div class="nav-content">
+            <div class="logo">YSY Portfolio</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">首页</a>
+                <a href="#" class="nav-link">作品</a>
+                <a href="#" class="nav-link">关于</a>
+                <a href="#" class="nav-link">联系</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content">
+        <h1>🔍 导航栏消失问题诊断</h1>
+        
+        <div class="status-panel">
+            <h2>实时状态监控</h2>
+            <div id="statusContainer"></div>
+        </div>
+        
+        <div class="status-panel">
+            <h2>操作测试</h2>
+            <button onclick="applyLiquidGlass()">应用液体玻璃效果</button>
+            <button onclick="removeEffect()">移除效果</button>
+            <button onclick="checkNavbar()">检查导航栏</button>
+            <button onclick="toggleDebug()">切换调试模式</button>
+        </div>
+        
+        <div class="section">
+            <h3>说明</h3>
+            <p>这个页面用于诊断导航栏在应用液体玻璃效果后消失的问题。</p>
+            <ul style="margin-top: 15px; line-height: 2;">
+                <li>导航栏应该始终固定在页面顶部</li>
+                <li>向下滚动页面测试固定定位</li>
+                <li>点击"应用液体玻璃效果"按钮模拟主页效果</li>
+                <li>观察导航栏是否消失或变透明</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h3>第1节 - 测试内容</h3>
+            <p>这是一些测试内容，用于测试滚动效果。导航栏应该始终可见。</p>
+        </div>
+        
+        <div class="section">
+            <h3>第2节 - 更多内容</h3>
+            <p>继续向下滚动...</p>
+        </div>
+        
+        <div class="section">
+            <h3>第3节 - 底部内容</h3>
+            <p>如果你能看到这段文字，说明页面很长。导航栏应该一直在顶部。</p>
+        </div>
+    </div>
+    
+    <script>
+        let glassEffect = null;
+        let debugInterval = null;
+        
+        // 实时监控导航栏状态
+        function updateStatus() {
+            const navbar = document.getElementById('navbar');
+            const statusContainer = document.getElementById('statusContainer');
+            
+            const computedStyle = window.getComputedStyle(navbar);
+            const isVisible = navbar.offsetHeight > 0;
+            const hasBackdrop = computedStyle.backdropFilter !== 'none';
+            
+            statusContainer.innerHTML = `
+                <div class="status-item ${isVisible ? 'good' : 'bad'}">
+                    <strong>可见性：</strong> ${isVisible ? '✅ 可见' : '❌ 不可见'} 
+                    (高度: ${navbar.offsetHeight}px)
+                </div>
+                <div class="status-item ${computedStyle.display !== 'none' ? 'good' : 'bad'}">
+                    <strong>Display：</strong> ${computedStyle.display}
+                </div>
+                <div class="status-item ${computedStyle.visibility !== 'hidden' ? 'good' : 'bad'}">
+                    <strong>Visibility：</strong> ${computedStyle.visibility}
+                </div>
+                <div class="status-item ${parseFloat(computedStyle.opacity) > 0 ? 'good' : 'bad'}">
+                    <strong>Opacity：</strong> ${computedStyle.opacity}
+                </div>
+                <div class="status-item ${computedStyle.position === 'fixed' ? 'good' : 'bad'}">
+                    <strong>Position：</strong> ${computedStyle.position}
+                </div>
+                <div class="status-item ${hasBackdrop ? 'good' : 'bad'}">
+                    <strong>Backdrop Filter：</strong> ${hasBackdrop ? computedStyle.backdropFilter : 'none'}
+                </div>
+                <div class="status-item ${navbar.classList.contains('liquid-glass-container') ? 'good' : 'bad'}">
+                    <strong>液体玻璃类：</strong> ${navbar.classList.contains('liquid-glass-container') ? '已应用' : '未应用'}
+                </div>
+                ${glassEffect ? `
+                <div class="status-item good">
+                    <strong>Glass Warp Filter：</strong> ${glassEffect.glassWarp.style.filter || 'none'}
+                </div>
+                ` : ''}
+            `;
+        }
+        
+        // 每秒更新一次状态
+        setInterval(updateStatus, 1000);
+        updateStatus();
+        
+        // 应用液体玻璃效果
+        async function applyLiquidGlass() {
+            // 动态加载脚本
+            if (!window.LiquidGlassEffect) {
+                const script = document.createElement('script');
+                script.src = 'liquid-glass.js';
+                document.head.appendChild(script);
+                
+                await new Promise(resolve => {
+                    script.onload = resolve;
+                });
+            }
+            
+            const navbar = document.getElementById('navbar');
+            
+            if (glassEffect) {
+                console.log('移除旧效果...');
+                glassEffect.destroy();
+            }
+            
+            console.log('应用液体玻璃效果...');
+            glassEffect = new LiquidGlassEffect(navbar, {
+                displacementScale: 100,
+                blurAmount: 40,
+                saturation: 200,
+                aberrationIntensity: 5,
+                elasticity: 0.3
+            });
+            
+            console.log('效果已应用:', glassEffect);
+            updateStatus();
+            
+            // 5秒后检查状态
+            setTimeout(() => {
+                console.log('5秒后状态检查...');
+                updateStatus();
+                if (navbar.offsetHeight === 0) {
+                    console.error('⚠️ 导航栏消失了！');
+                    alert('⚠️ 导航栏消失了！请查看控制台。');
+                }
+            }, 5000);
+        }
+        
+        function removeEffect() {
+            if (glassEffect) {
+                glassEffect.destroy();
+                glassEffect = null;
+                console.log('效果已移除');
+                updateStatus();
+            } else {
+                alert('没有已应用的效果');
+            }
+        }
+        
+        function checkNavbar() {
+            const navbar = document.getElementById('navbar');
+            console.group('🔍 导航栏详细检查');
+            console.log('Element:', navbar);
+            console.log('Computed styles:', window.getComputedStyle(navbar));
+            console.log('Inline styles:', navbar.style.cssText);
+            console.log('Classes:', Array.from(navbar.classList));
+            console.log('Children:', Array.from(navbar.children));
+            console.log('Offset height:', navbar.offsetHeight);
+            console.log('Client height:', navbar.clientHeight);
+            console.log('Scroll height:', navbar.scrollHeight);
+            console.groupEnd();
+            
+            updateStatus();
+        }
+        
+        function toggleDebug() {
+            if (debugInterval) {
+                clearInterval(debugInterval);
+                debugInterval = null;
+                console.log('调试模式关闭');
+            } else {
+                debugInterval = setInterval(() => {
+                    const navbar = document.getElementById('navbar');
+                    console.log('Navbar height:', navbar.offsetHeight, 
+                               'Display:', window.getComputedStyle(navbar).display,
+                               'Opacity:', window.getComputedStyle(navbar).opacity);
+                }, 1000);
+                console.log('调试模式开启（每秒输出）');
+            }
+        }
+    </script>
+</body>
+</html>
+
