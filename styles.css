@@ -14,8 +14,8 @@
     --glass-border: rgba(255, 255, 255, 0.18);
     
     /* ==================== 标题栏玻璃效果参数（可调节） ==================== */
-    --navbar-blur: 5px;
-    --navbar-saturation: 160%;
+    --navbar-blur: 20px;
+    --navbar-saturation: 180%;
     --navbar-brightness: 1.1;
     --navbar-bg-opacity-1: 0.03;
     --navbar-bg-opacity-2: 0.01;
@@ -41,6 +41,15 @@
     --crystal-facet-intensity: 0.5;     /* 切面强度 */
     --crystal-rainbow-shift: 3px;       /* 彩虹偏移 */
     --crystal-clarity: 0.02;            /* 透明度 */
+    
+    /* 首页文字效果参数（可调节） */
+    --hero-text-color: #ffffff;         /* 主标题颜色 */
+    --hero-subtitle-color: #e0e0e0;     /* 副标题颜色 */
+    --hero-stroke-width: 0.5px;         /* 描边宽度 */
+    --hero-stroke-color: rgba(255, 255, 255, 0);  /* 描边颜色 */
+    --hero-glow-size: 30px;             /* 发光大小1 */
+    --hero-glow-size-2: 15px;           /* 发光大小2 */
+    --hero-glow-color: rgba(255, 255, 255, 0.5);    /* 发光颜色 */
 }
 
 * {
@@ -346,13 +355,14 @@ body.loaded {
 }
 
 .title-line {
-    color: #ffffff;
+    color: var(--hero-text-color, #ffffff);
     display: block;
     position: relative;
-    animation: slideInRight 0.8s ease-out backwards;
-    text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6),
-                 0 0 40px rgba(0, 240, 255, 0.4);
+    animation: slideInRight 0.8s ease-out backwards, heroGlowAnimation 24s ease-in-out infinite;
     transition: all 0.3s ease;
+    /* 细边缘发光效果 */
+    -webkit-text-stroke: var(--hero-stroke-width, 0.5px) var(--hero-stroke-color, rgba(255, 255, 255, 0));
+    text-stroke: var(--hero-stroke-width, 0.5px) var(--hero-stroke-color, rgba(255, 255, 255, 0));
 }
 
 .title-line:nth-child(1) {
@@ -361,8 +371,6 @@ body.loaded {
 
 .title-line:nth-child(2) {
     animation-delay: 0.2s;
-    text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6),
-                 0 0 40px rgba(112, 0, 255, 0.5);
 }
 
 @keyframes gradientShift {
@@ -404,13 +412,107 @@ body.loaded {
     }
 }
 
+/* ==================== 首页文字发光动画 ==================== */
+/* RGB颜色循环 + 呼吸效果（超慢速）- 24秒完整循环 */
+@keyframes heroGlowAnimation {
+    /* 红色 - 呼吸 */
+    0% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 80, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 80, 0.12));
+    }
+    5% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 80, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 80, 0.25));
+    }
+    10% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 80, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 80, 0.12));
+    }
+    
+    /* 橙色 - 呼吸 */
+    16.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 180, 80, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 180, 80, 0.12));
+    }
+    21.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 180, 80, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 180, 80, 0.25));
+    }
+    26.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 180, 80, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 180, 80, 0.12));
+    }
+    
+    /* 绿色 - 呼吸 */
+    33.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 255, 120, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 255, 120, 0.12));
+    }
+    38.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 255, 120, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 255, 120, 0.25));
+    }
+    43.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 255, 120, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 255, 120, 0.12));
+    }
+    
+    /* 青色 - 呼吸 */
+    50% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 200, 255, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 200, 255, 0.12));
+    }
+    55% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 200, 255, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 200, 255, 0.25));
+    }
+    60% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(80, 200, 255, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(80, 200, 255, 0.12));
+    }
+    
+    /* 紫色 - 呼吸 */
+    66.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(160, 80, 255, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(160, 80, 255, 0.12));
+    }
+    71.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(160, 80, 255, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(160, 80, 255, 0.25));
+    }
+    76.67% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(160, 80, 255, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(160, 80, 255, 0.12));
+    }
+    
+    /* 粉色 - 呼吸 */
+    83.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 200, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 200, 0.12));
+    }
+    88.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 200, 0.18))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 200, 0.25));
+    }
+    93.33% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 200, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 200, 0.12));
+    }
+    
+    /* 回到红色 */
+    100% {
+        filter: drop-shadow(0 0 var(--hero-glow-size, 30px) rgba(255, 80, 80, 0.08))
+                drop-shadow(0 0 var(--hero-glow-size-2, 15px) rgba(255, 80, 80, 0.12));
+    }
+}
 
 .hero-subtitle {
     font-size: clamp(18px, 2vw, 24px);
-    color: var(--text-secondary);
+    color: var(--hero-subtitle-color, var(--text-secondary));
     margin-bottom: 50px;
     letter-spacing: 2px;
     animation: fadeIn 1s ease-out 0.4s backwards;
+    transition: all 0.3s ease;
 }
 
 .hero-cta {
@@ -515,7 +617,8 @@ body.loaded {
 
 /* ==================== 水晶玻璃效果 ==================== */
 .crystal-glass.btn-primary,
-.crystal-glass.btn-secondary {
+.crystal-glass.btn-secondary,
+.crystal-glass .title-line {
     /* 水晶玻璃：低模糊高折射 */
     backdrop-filter: blur(calc(var(--navbar-blur) * var(--crystal-refraction) / 2)) 
                      saturate(calc(var(--navbar-saturation) * var(--crystal-dispersion) / 100)) 
@@ -546,7 +649,8 @@ body.loaded {
 
 /* 水晶玻璃的切面效果 */
 .crystal-glass.btn-primary::before,
-.crystal-glass.btn-secondary::before {
+.crystal-glass.btn-secondary::before,
+.crystal-glass .title-line::before {
     background: linear-gradient(45deg,
         transparent 0%,
         rgba(255, 255, 255, calc(var(--crystal-facet-intensity) * 0.8)) 25%,

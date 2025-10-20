@@ -529,27 +529,65 @@ async function loadHeroBackgrounds() {
     return backgrounds;
 }
 
+let currentBackgroundIndex = -1;
+let heroBackgroundsCache = [];
+let backgroundSwitchTimer = null;
+
 async function setRandomHeroBackground() {
     const heroBgMedia = document.getElementById('heroBgMedia');
     if (!heroBgMedia) return;
     
-    // 加载所有可用的背景（包括作品库中的媒体）
-    const heroBackgrounds = await loadHeroBackgrounds();
+    // 首次加载时初始化背景缓存
+    if (heroBackgroundsCache.length === 0) {
+        heroBackgroundsCache = await loadHeroBackgrounds();
+    }
     
-    // 随机选择一个背景
-    const randomBg = heroBackgrounds[Math.floor(Math.random() * heroBackgrounds.length)];
+    // 如果只有一个背景，直接使用
+    if (heroBackgroundsCache.length === 1) {
+        currentBackgroundIndex = 0;
+    } else {
+        // 随机选择一个不同于当前的背景
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * heroBackgroundsCache.length);
+        } while (newIndex === currentBackgroundIndex && heroBackgroundsCache.length > 1);
+        currentBackgroundIndex = newIndex;
+    }
+    
+    const randomBg = heroBackgroundsCache[currentBackgroundIndex];
+    
+    // 清空之前的背景内容
+    heroBgMedia.innerHTML = '';
+    
+    // 清除之前的定时器
+    if (backgroundSwitchTimer) {
+        clearTimeout(backgroundSwitchTimer);
+        backgroundSwitchTimer = null;
+    }
     
     if (randomBg.type === 'image') {
         // 创建图片元素
         const img = document.createElement('img');
         img.src = randomBg.src;
         img.alt = 'Hero Background';
-        img.style.opacity = '0.7';
+        img.style.opacity = '0';
         img.style.transition = 'opacity 2s ease';
         
         // 图片加载完成后显示
         img.onload = () => {
             img.style.opacity = '0.7';
+            // 图片显示3.5秒后切换到下一个
+            backgroundSwitchTimer = setTimeout(() => {
+                setRandomHeroBackground();
+            }, 3500);
+        };
+        
+        // 如果图片加载失败，也要继续切换
+        img.onerror = () => {
+            console.warn('[Hero Background] 图片加载失败:', randomBg.src);
+            backgroundSwitchTimer = setTimeout(() => {
+                setRandomHeroBackground();
+            }, 1000);
         };
         
         heroBgMedia.appendChild(img);
@@ -559,14 +597,27 @@ async function setRandomHeroBackground() {
         video.src = randomBg.src;
         video.autoplay = true;
         video.muted = true;
-        video.loop = true;
+        video.loop = false; // 不循环播放，播放完后切换
         video.playsInline = true;
-        video.style.opacity = '0.7';
+        video.style.opacity = '0';
         video.style.transition = 'opacity 2s ease';
         
         // 视频加载完成后显示
         video.onloadeddata = () => {
             video.style.opacity = '0.7';
+        };
+        
+        // 视频播放结束后切换到下一个
+        video.onended = () => {
+            setRandomHeroBackground();
+        };
+        
+        // 如果视频加载失败，也要继续切换
+        video.onerror = () => {
+            console.warn('[Hero Background] 视频加载失败:', randomBg.src);
+            backgroundSwitchTimer = setTimeout(() => {
+                setRandomHeroBackground();
+            }, 1000);
         };
         
         heroBgMedia.appendChild(video);
@@ -848,6 +899,92 @@ function initInfoCard() {
         document.documentElement.style.setProperty('--crystal-clarity', (value / 100).toFixed(2));
     });
     
+    // ==================== 首页文字效果参数调节 ====================
+    const heroTextColorPicker = document.getElementById('heroTextColor');
+    const heroSubtitleColorPicker = document.getElementById('heroSubtitleColor');
+    const heroStrokeWidthSlider = document.getElementById('heroStrokeWidth');
+    const heroStrokeColorPicker = document.getElementById('heroStrokeColor');
+    const heroStrokeOpacitySlider = document.getElementById('heroStrokeOpacity');
+    const heroGlowSizeSlider = document.getElementById('heroGlowSize');
+    const heroGlowColorPicker = document.getElementById('heroGlowColor');
+    const heroGlowOpacitySlider = document.getElementById('heroGlowOpacity');
+    const heroMouseEffectSlider = document.getElementById('heroMouseEffect');
+    
+    const heroStrokeWidthValue = document.getElementById('heroStrokeWidthValue');
+    const heroStrokeOpacityValue = document.getElementById('heroStrokeOpacityValue');
+    const heroGlowSizeValue = document.getElementById('heroGlowSizeValue');
+    const heroGlowOpacityValue = document.getElementById('heroGlowOpacityValue');
+    const heroMouseEffectValue = document.getElementById('heroMouseEffectValue');
+    
+    // 颜色选择器
+    heroTextColorPicker.addEventListener('input', (e) => {
+        document.documentElement.style.setProperty('--hero-text-color', e.target.value);
+    });
+    
+    heroSubtitleColorPicker.addEventListener('input', (e) => {
+        document.documentElement.style.setProperty('--hero-subtitle-color', e.target.value);
+    });
+    
+    heroStrokeColorPicker.addEventListener('input', (e) => {
+        const color = e.target.value;
+        const opacity = parseFloat(heroStrokeOpacitySlider.value) / 100;
+        // 将hex颜色转换为rgba
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--hero-stroke-color', `rgba(${r}, ${g}, ${b}, ${opacity})`);
+    });
+    
+    heroGlowColorPicker.addEventListener('input', (e) => {
+        const color = e.target.value;
+        const opacity = parseFloat(heroGlowOpacitySlider.value) / 100;
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--hero-glow-color', `rgba(${r}, ${g}, ${b}, ${opacity})`);
+    });
+    
+    // 滑块控制
+    heroStrokeWidthSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        heroStrokeWidthValue.textContent = value;
+        document.documentElement.style.setProperty('--hero-stroke-width', `${value / 10}px`);
+    });
+    
+    heroStrokeOpacitySlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        heroStrokeOpacityValue.textContent = value;
+        const color = heroStrokeColorPicker.value;
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--hero-stroke-color', `rgba(${r}, ${g}, ${b}, ${value / 100})`);
+    });
+    
+    heroGlowSizeSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        heroGlowSizeValue.textContent = value;
+        document.documentElement.style.setProperty('--hero-glow-size', `${value}px`);
+        document.documentElement.style.setProperty('--hero-glow-size-2', `${value / 2}px`);
+    });
+    
+    heroGlowOpacitySlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        heroGlowOpacityValue.textContent = value;
+        const color = heroGlowColorPicker.value;
+        const r = parseInt(color.slice(1, 3), 16);
+        const g = parseInt(color.slice(3, 5), 16);
+        const b = parseInt(color.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--hero-glow-color', `rgba(${r}, ${g}, ${b}, ${value / 100})`);
+    });
+    
+    heroMouseEffectSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        heroMouseEffectValue.textContent = value;
+        // 更新鼠标晃动强度
+        window.heroMouseEffectStrength = value;
+    });
+    
     console.log('[InfoCard] Info card initialized successfully');
     console.log('%c✨ 参数调节面板已启用！', 'font-size: 14px; font-weight: bold; color: #4facfe;');
     console.log('%c点击个人信息卡右上角的⚙️图标打开参数面板', 'font-size: 12px; color: #b0b0c0;');
@@ -861,4 +998,68 @@ function initInfoCard() {
     console.log('%c    • 折射率、色散强度、内部反射', 'font-size: 12px; color: #ec4899;');
     console.log('%c    • 切面强度、彩虹偏移、透明度', 'font-size: 12px; color: #ec4899;');
 }
+
+// ==================== 鼠标移动晃动效果 ====================
+(function initHeroMouseEffect() {
+    // 初始化晃动强度
+    window.heroMouseEffectStrength = 15;
+    
+    // 获取首页hero区域的所有文字元素
+    const heroTitle = document.querySelector('.hero-title');
+    const heroSubtitle = document.querySelector('.hero-subtitle');
+    const heroButtons = document.querySelectorAll('.btn-primary, .btn-secondary');
+    
+    if (!heroTitle) return;
+    
+    // 存储所有需要晃动的元素
+    const elementsToMove = [
+        heroTitle,
+        heroSubtitle,
+        ...Array.from(heroButtons)
+    ].filter(el => el !== null);
+    
+    // 鼠标位置（归一化到-1到1之间）
+    let mouseX = 0;
+    let mouseY = 0;
+    
+    // 当前位置（用于平滑过渡）
+    const currentPositions = elementsToMove.map(() => ({ x: 0, y: 0 }));
+    
+    // 监听鼠标移动
+    document.addEventListener('mousemove', (e) => {
+        // 归一化鼠标位置到-1到1之间
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    });
+    
+    // 动画循环
+    function animate() {
+        elementsToMove.forEach((element, index) => {
+            if (!element) return;
+            
+            // 获取当前晃动强度
+            const strength = window.heroMouseEffectStrength || 15;
+            
+            // 计算目标位置（鼠标位置 * 强度）
+            const targetX = mouseX * strength;
+            const targetY = mouseY * strength;
+            
+            // 平滑过渡（lerp）
+            const smoothing = 0.1;
+            currentPositions[index].x += (targetX - currentPositions[index].x) * smoothing;
+            currentPositions[index].y += (targetY - currentPositions[index].y) * smoothing;
+            
+            // 应用transform
+            element.style.transform = `translate(${currentPositions[index].x}px, ${currentPositions[index].y}px)`;
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    
+    // 启动动画
+    animate();
+    
+    console.log('[HeroMouseEffect] Mouse follow effect initialized');
+    console.log('%c🎯 首页文字鼠标晃动效果已启用！', 'font-size: 14px; font-weight: bold; color: #10b981;');
+})();
 
