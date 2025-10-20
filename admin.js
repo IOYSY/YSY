@@ -660,3 +660,140 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// ==================== 数据导出和导入功能 ====================
+
+/**
+ * 导出所有数据到JSON文件
+ */
+async function exportAllData() {
+    try {
+        // 获取所有数据
+        const siteInfo = await IndexedDBManager.getSiteInfo();
+        const works = await IndexedDBManager.getAllWorks();
+        const personalInfo = await IndexedDBManager.getPersonalInfo();
+        
+        // 组织数据结构
+        const exportData = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            data: {
+                siteInfo,
+                works,
+                personalInfo
+            }
+        };
+        
+        // 转换为JSON字符串
+        const jsonString = JSON.stringify(exportData, null, 2);
+        
+        // 创建Blob对象
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        
+        // 创建下载链接
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `portfolio-data-${new Date().getTime()}.json`;
+        
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+        
+        // 清理
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast('数据导出成功！', 'success');
+        console.log('[Export] 数据导出成功', exportData);
+    } catch (error) {
+        console.error('[Export] 导出失败:', error);
+        showToast('导出失败：' + error.message, 'error');
+    }
+}
+
+/**
+ * 从JSON文件导入数据
+ */
+async function importDataFromFile(file) {
+    try {
+        // 读取文件内容
+        const text = await file.text();
+        const importData = JSON.parse(text);
+        
+        // 验证数据格式
+        if (!importData.data || !importData.data.siteInfo || !importData.data.works || !importData.data.personalInfo) {
+            throw new Error('数据格式不正确');
+        }
+        
+        // 确认导入
+        const confirmed = confirm(
+            `确定要导入数据吗？\n\n` +
+            `导入内容：\n` +
+            `- 网站信息\n` +
+            `- ${importData.data.works.length} 个作品\n` +
+            `- 个人信息\n\n` +
+            `⚠️ 这将覆盖当前所有数据！`
+        );
+        
+        if (!confirmed) {
+            showToast('已取消导入', 'info');
+            return;
+        }
+        
+        // 导入数据
+        await IndexedDBManager.updateSiteInfo(importData.data.siteInfo);
+        await IndexedDBManager.updatePersonalInfo(importData.data.personalInfo);
+        
+        // 清空现有作品，导入新作品
+        const existingWorks = await IndexedDBManager.getAllWorks();
+        for (const work of existingWorks) {
+            await IndexedDBManager.deleteWork(work.id);
+        }
+        
+        for (const work of importData.data.works) {
+            await IndexedDBManager.addWork(work);
+        }
+        
+        showToast('数据导入成功！页面将刷新...', 'success');
+        
+        // 刷新页面以显示新数据
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+        
+        console.log('[Import] 数据导入成功', importData);
+    } catch (error) {
+        console.error('[Import] 导入失败:', error);
+        showToast('导入失败：' + error.message, 'error');
+    }
+}
+
+// ==================== 导出/导入按钮事件 ====================
+
+// 导出按钮
+const exportBtn = document.getElementById('exportDataBtn');
+if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+        exportAllData();
+    });
+}
+
+// 导入按钮
+const importBtn = document.getElementById('importDataBtn');
+const importFileInput = document.getElementById('importFileInput');
+
+if (importBtn && importFileInput) {
+    importBtn.addEventListener('click', () => {
+        importFileInput.click();
+    });
+    
+    importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            importDataFromFile(file);
+        }
+        // 清空input，允许重复选择同一文件
+        e.target.value = '';
+    });
+}
+

@@ -20,9 +20,13 @@ const IndexedDBManager = {
                 reject(request.error);
             };
 
-            request.onsuccess = () => {
+            request.onsuccess = async () => {
                 this.db = request.result;
                 console.log('IndexedDB初始化成功');
+                
+                // 检查是否需要加载默认数据
+                await this.loadDefaultDataIfEmpty();
+                
                 resolve(this.db);
             };
 
@@ -43,6 +47,69 @@ const IndexedDBManager = {
                 console.log('IndexedDB数据库结构创建成功');
             };
         });
+    },
+
+    /**
+     * 加载默认数据（如果数据库为空）
+     */
+    async loadDefaultDataIfEmpty() {
+        try {
+            // 检查是否已有数据
+            const works = await this.getAllWorks();
+            const siteInfo = await new Promise((resolve) => {
+                const transaction = this.db.transaction(['siteInfo'], 'readonly');
+                const store = transaction.objectStore('siteInfo');
+                const request = store.get('main');
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => resolve(null);
+            });
+            
+            // 如果数据库不为空，不加载默认数据
+            if (works.length > 0 || siteInfo) {
+                console.log('[DefaultData] 数据库已有数据，跳过加载默认数据');
+                return;
+            }
+            
+            console.log('[DefaultData] 数据库为空，尝试加载默认数据...');
+            
+            // 尝试加载 default-data.json
+            const response = await fetch('default-data.json');
+            if (!response.ok) {
+                console.log('[DefaultData] 未找到 default-data.json，使用内置默认数据');
+                return;
+            }
+            
+            const defaultData = await response.json();
+            console.log('[DefaultData] 成功加载默认数据文件');
+            
+            // 导入数据
+            if (defaultData.data) {
+                // 导入网站信息
+                if (defaultData.data.siteInfo) {
+                    await this.updateSiteInfo(defaultData.data.siteInfo);
+                    console.log('[DefaultData] 已导入网站信息');
+                }
+                
+                // 导入个人信息
+                if (defaultData.data.personalInfo) {
+                    await this.updatePersonalInfo(defaultData.data.personalInfo);
+                    console.log('[DefaultData] 已导入个人信息');
+                }
+                
+                // 导入作品
+                if (defaultData.data.works && defaultData.data.works.length > 0) {
+                    for (const work of defaultData.data.works) {
+                        await this.addWork(work);
+                    }
+                    console.log(`[DefaultData] 已导入 ${defaultData.data.works.length} 个作品`);
+                }
+                
+                console.log('[DefaultData] ✅ 默认数据加载完成！');
+            }
+        } catch (error) {
+            console.warn('[DefaultData] 加载默认数据失败:', error);
+            // 失败不影响正常使用，只是没有预设数据
+        }
     },
 
     /**
@@ -224,6 +291,29 @@ const IndexedDBManager = {
             };
         }
         return null;
+    },
+
+    // ==================== 辅助方法（用于数据导入） ====================
+
+    /**
+     * 添加作品（别名方法）
+     */
+    async addWork(work) {
+        return await this.saveWork(work);
+    },
+
+    /**
+     * 更新网站信息（别名方法）
+     */
+    async updateSiteInfo(info) {
+        return await this.saveSiteInfo(info);
+    },
+
+    /**
+     * 更新个人信息（别名方法）
+     */
+    async updatePersonalInfo(info) {
+        return await this.savePersonalInfo(info);
     }
 };
 

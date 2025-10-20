@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "exportDate": "2024-01-01T00:00:00.000Z",
+  "data": {
+    "siteInfo": {
+      "siteTitle": "个人作品集 - Portfolio",
+      "logoText": "YSY",
+      "logoSubtitle": "Portfolio",
+      "heroTitle1": "创造",
+      "heroTitle2": "科技未来",
+      "heroSubtitle": "探索创新 · 设计极致 · 代码艺术",
+      "aboutText": "我是一名充满热情的创作者，专注于将创新技术与美学设计相结合。通过代码、设计和创意，我致力于打造令人印象深刻的数字体验。",
+      "aboutSkills": "全栈开发 · UI/UX设计 · 数据可视化 · 3D动画"
+    },
+    "works": [],
+    "personalInfo": {
+      "name": "YSY",
+      "title": "全栈开发 · UI设计师",
+      "email": "your.email@example.com",
+      "location": "中国",
+      "experience": "5+ 年",
+      "specialty": "React · Vue · UI/UX",
+      "contactEmail": "mailto:your.email@example.com",
+      "contactGithub": "https://github.com/yourusername",
+      "contactTwitter": "https://twitter.com/yourusername"
+    }
+  }
+}
+

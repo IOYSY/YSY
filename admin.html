@@ -15,6 +15,21 @@
                 <span class="logo-subtitle">管理后台</span>
             </div>
             <div class="nav-actions">
+                <button class="btn-export" id="exportDataBtn" title="导出所有数据">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2V12M10 12L7 9M10 12L13 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 14V16C3 17.1046 3.89543 18 5 18H15C16.1046 18 17 17.1046 17 16V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    导出数据
+                </button>
+                <button class="btn-import" id="importDataBtn" title="导入数据">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 12V2M10 2L7 5M10 2L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 14V16C3 17.1046 3.89543 18 5 18H15C16.1046 18 17 17.1046 17 16V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    导入数据
+                </button>
+                <input type="file" id="importFileInput" accept=".json" style="display: none;">
                 <a href="index.html" class="btn-view-site" target="_blank">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M10 3C5 3 1.73 7.11 1 10c.73 2.89 4 7 9 7s8.27-4.11 9-7c-.73-2.89-4-7-9-7zm0 11.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="currentColor"/>
