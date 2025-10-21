@@ -483,14 +483,16 @@ if ('ontouchstart' in window) {
 
 // ==================== 首屏动态背景 ====================
 // 定义默认背景媒体资源（视频和图片）
+// 🔒 已关闭默认图片，只使用 default-data.json 中的图片
+// 如需恢复，取消注释下面的数组即可
 const defaultHeroBackgrounds = [
-    // 图片
-    { type: 'image', src: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&q=80' },
-    { type: 'image', src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80' },
-    { type: 'image', src: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1920&q=80' },
-    { type: 'image', src: 'https://images.unsplash.com/photo-1551817958-d9d86fb29431?w=1920&q=80' },
-    { type: 'image', src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80' },
-    { type: 'image', src: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1920&q=80' },
+    // 图片 - 已关闭
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&q=80' },
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80' },
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1920&q=80' },
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1551817958-d9d86fb29431?w=1920&q=80' },
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80' },
+    // { type: 'image', src: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1920&q=80' },
 ];
 
 /**
